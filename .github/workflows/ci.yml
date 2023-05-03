@@ -1,9 +1,7 @@
 name: JIRENGU_CI
 
 on:
-  pull_request:
-    branches:
-      - main
+  [pull_request,issues]
     
 permissions:
   contents: read
@@ -13,14 +11,17 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest
 
-      
-
     steps:
+      - name: PR reply
+        uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: 'Thanks you for adding your first issue. We will be looking into it as soon as possible.'
+          pr-message: 'Thanks for your first PR. We really appreciate it!'
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-
       - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:
