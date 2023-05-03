@@ -1,7 +1,9 @@
 name: JIRENGU_CI
 
 on:
-  [pull_request,issues]
+  pull_request:
+    branches: 
+      - main
     
 permissions:
   contents: read
