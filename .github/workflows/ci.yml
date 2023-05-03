@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build_and_test:
+  homework-judgement:
     runs-on: ubuntu-latest
 
       
