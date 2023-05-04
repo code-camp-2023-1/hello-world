@@ -4,23 +4,22 @@ on:
   pull_request:
     branches:
       - main
-    
-permissions:
-  contents: read
-  pull-requests: write
-
 jobs:
-  build_and_test:
+  homework-judgement:
     runs-on: ubuntu-latest
-
-      
-
+    permissions:
+      pull-requests: write
     steps:
+      - name: Comment on PR
+        uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+              **Thanks for your pr!**
+          proxy-url: https://add-pr-comment-proxy-94idvmwyie-uc.a.run.app    
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
       - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:
@@ -38,28 +37,13 @@ jobs:
         run: mvn -B clean verify --file pom.xml
 
       - name: Comment PR with test result
-        if: ${{ always() }}
-        uses: actions/github-script@v5
-        
+        uses: mshick/add-pr-comment@v2
         with:
-          github-token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
-          script: |
-            try {
-              const { owner, repo, number } = context.issue;
-              const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: number });
-              const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number: number });
-              const commentBody = Buffer.from(`Test result: **${process.env.TEST_RESULT}**`, 'utf8').toString('base64');
-              const existingComment = comments.find(c => c.body.startsWith("Test result:"));
-              if (existingComment) {
-                await github.rest.issues.updateComment({ owner, repo, comment_id: existingComment.id, body: commentBody });
-              } else {
-                await github.rest.issues.createComment({ owner, repo, issue_number: number, body: commentBody });
-              }
-            } catch (error) {
-              console.error(error);
-              core.setFailed(error.message);
-            }
-
+          message: |
+              **Your code passed the jugdement!**
+          message-failure: |
+            Uh oh!
+          proxy-url: https://add-pr-comment-proxy-94idvmwyie-uc.a.run.app 
       - name: Set TEST_RESULT environment variable
         run: echo "TEST_RESULT=Success" >> $GITHUB_ENV
         if: ${{ success() }}
@@ -67,13 +51,3 @@ jobs:
       - name: Set TEST_RESULT environment variable
         run: echo "TEST_RESULT=Failed" >> $GITHUB_ENV
         if: ${{ failure() }}
-
-      - name: Revert PR branch
-        if: ${{ always() }}
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git checkout ${{ github.head_ref }}
-          git revert --no-commit HEAD
-          git commit -m "Revert test commit"
-          git push
