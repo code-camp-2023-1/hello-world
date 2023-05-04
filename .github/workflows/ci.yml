@@ -7,7 +7,8 @@ on:
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
-
+    permissions:
+      pull-requests: write
     steps:
       - name: Comment on PR
         uses: mshick/add-pr-comment@v2
