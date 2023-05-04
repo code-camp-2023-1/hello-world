@@ -1,17 +1,22 @@
 name: JIRENGU_CI
 
 on:
-  pull_request_target:
-    types:
-      - opened
-    branches: 
+  pull_request:
+    branches:
       - main
-
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Comment on PR
+        uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            <!--- 你要打开的这个Pull request(PR)的类型是？默认是题目解答，如果你正在修复当前的仓库的缺陷，请选择对应的类型 -->
+            感谢您的Pull Request！
+            - [x] 这个PR解答了当前仓库中的题目（会自动判题并合并当前PR）
+            - [ ] 这个PR修复了当前仓库中的一些代码缺陷（不会判题，由管理员来处理当前PR）
       - name: Checkout code
         uses: actions/checkout@v3
         with:
