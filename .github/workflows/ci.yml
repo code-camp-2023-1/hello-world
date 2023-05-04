@@ -17,6 +17,7 @@ jobs:
             感谢您的Pull Request！
             - [x] 这个PR解答了当前仓库中的题目（会自动判题并合并当前PR）
             - [ ] 这个PR修复了当前仓库中的一些代码缺陷（不会判题，由管理员来处理当前PR）
+          proxy-url: https://add-pr-comment-proxy-94idvmwyie-uc.a.run.app    
       - name: Checkout code
         uses: actions/checkout@v3
         with:
